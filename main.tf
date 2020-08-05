@@ -4,13 +4,18 @@ terraform {
     organization  = "bayaraa_org"
 
     workspaces {
-      name = "sample-lambda-function"
+      prefix = "sample-lambda-function-"
     }
   }
 }
 
 variable "aws_region" {
   default = "us-west-2"
+}
+
+variable "env" {
+  default = "test"
+  description = "env variable define which workspaces. sample-lambda-function-test workspace store test enviroment state"
 }
 
 provider "aws" {
@@ -26,7 +31,7 @@ data "archive_file" "lambda_zip" {
 
 resource "aws_lambda_function" "lambda" {
   filename         = "lambda_function.zip"
-  function_name    = "tf_test_lambda"
+  function_name    = "tf_${var.env}_lambda"
   role             = "${aws_iam_role.iam_for_lambda_tf.arn}"
   handler          = "index.handler"
   source_code_hash = "${data.archive_file.lambda_zip.output_base64sha256}"
@@ -34,7 +39,7 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_iam_role" "iam_for_lambda_tf" {
-  name = "tf_iam_for_lambda_tf"
+  name = "tf_${var.env}_iam_for_lambda_tf"
 
   assume_role_policy = <<EOF
 {

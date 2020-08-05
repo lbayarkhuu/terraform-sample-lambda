@@ -1,3 +1,14 @@
+terraform {
+  backend "remote" {
+    hostname      = "app.terraform.io"
+    organization  = "bayaraa_org"
+
+    workspaces {
+      name = "sample-lambda-function"
+    }
+  }
+}
+
 variable "aws_region" {
   default = "us-west-2"
 }
